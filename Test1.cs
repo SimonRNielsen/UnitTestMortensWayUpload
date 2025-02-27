@@ -10,6 +10,8 @@ namespace UnitTestMortensWay
         [TestMethod]
         public void TestAStar()
         {
+
+            #region Grid and cells
             Dictionary<Vector2, Tile> cells = new Dictionary<Vector2, Tile>();
             List<Tile> tiles = new List<Tile>();
             for (int j = 0; j < 15; j++)
@@ -69,17 +71,30 @@ namespace UnitTestMortensWay
                     tiles.Add(t);
                 }
             }
-            int expected = 14;
+            #endregion
+            Tile startNode = tiles.Find(x => (TileTypes)x.Type == TileTypes.Portal);
+            Tile endNode = tiles.Find(y => (TileTypes)y.Type == TileTypes.TowerPortion);
+            List<Tile> expectedList = new List<Tile>();
+            expectedList.Add(startNode);
+            for (int i = 1; i < 13; i++)
+            {
+                Tile tile = tiles.Find(x => x.Position == new Vector2(i * 64, 13 * 64));
+                expectedList.Add(tile);
+            }
+            expectedList.Add(endNode);
             List<Tile> pathTest = new List<Tile>();
             AStar aStar = new AStar(cells);
-            pathTest = AStar.FindPath(tiles.Find(x => (TileTypes)x.Type == TileTypes.Portal).Position, tiles.Find(y => (TileTypes)y.Type == TileTypes.TowerPortion).Position);
+            pathTest = AStar.FindPath(startNode.Position, endNode.Position);
 
-            Assert.AreEqual(expected, pathTest.Count);
+            CollectionAssert.AreEqual(expectedList, pathTest);
+
         }
 
         [TestMethod]
         public void BFSTest()
         {
+
+            #region Grid & Edges
             List<Tile> tiles = new List<Tile>();
             for (int j = 0; j < 15; j++)
             {
@@ -141,15 +156,31 @@ namespace UnitTestMortensWay
             {
                 entry.CreateEdges(tiles);
             }
+            #endregion
             Tile startNode = tiles.Find(x => (TileTypes)x.Type == TileTypes.Portal);
             Tile endNode = tiles.Find(y => (TileTypes)y.Type == TileTypes.TowerPortion);
-            BFS.BFSMethod(startNode, endNode);
+            List<Tile> expectedList = new List<Tile>();
+            expectedList.Add(startNode);
+            for (int i = 1; i < 13; i++)
+            {
+                if (i <= 2 || i == 12)
+                {
+                    Tile tile = tiles.Find(x => x.Position == new Vector2(i * 64, 12 * 64));
+                    expectedList.Add(tile);
+                }
+                else
+                {
+                    Tile tile = tiles.Find(x => x.Position == new Vector2(i * 64, 13 * 64));
+                    expectedList.Add(tile);
+                }
+            }
+            expectedList.Add(endNode);
             List<Tile> pathTest = new List<Tile>();
+            BFS.BFSMethod(startNode, endNode);
             pathTest = BFS.FindPath(endNode, startNode);
 
-            int expected = 14;
+            CollectionAssert.AreEqual(expectedList, pathTest);
 
-            Assert.AreEqual(expected, pathTest.Count);
         }
     }
 }
