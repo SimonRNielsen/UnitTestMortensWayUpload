@@ -12,19 +12,19 @@ namespace Testing
 {
     internal class AStar
     {
-        private static Dictionary<Vector2, Tile> cells;
+        //private static Dictionary<Vector2, Tile> cells;
 
         public AStar(Dictionary<Vector2, Tile> cells)
         {
-            Cells = cells;
+            //Cells = cells;
         }
 
-        private static HashSet<Tile> openList = new HashSet<Tile>();
-        private static HashSet<Tile> closedList = new HashSet<Tile>();
+        private  HashSet<Tile> openList = new HashSet<Tile>();
+        private  HashSet<Tile> closedList = new HashSet<Tile>();
 
-        public static Dictionary<Vector2, Tile> Cells { get => cells; set => cells = value; }
+        //public static Dictionary<Vector2, Tile> Cells { get => cells; set => cells = value; }
 
-        public static List<Tile> FindPath(Vector2 startVector, Vector2 endVector)
+        public List<Tile> FindPath(Vector2 startVector, Vector2 endVector, Dictionary<Vector2, Tile> cells)
         {
 
             //Ryder tidligere data
@@ -38,8 +38,8 @@ namespace Testing
             //    return null;
             //}
 
-            Tile startTile = Cells[startVector];
-            Tile endTile = Cells[endVector];
+            Tile startTile = cells[startVector];
+            Tile endTile = cells[endVector];
             openList.Add(cells[startVector]);
 
             while (openList.Count > 0)
@@ -57,10 +57,10 @@ namespace Testing
 
                 if (curCell.Position.X == endVector.X && curCell.Position.Y == endVector.Y)
                 {
-                    return RetracePath(Cells[startVector], Cells[endVector]);
+                    return RetracePath(cells[startVector], cells[endVector]);
                 }
 
-                List<Tile> neighbours = GetNeighbours(curCell);
+                List<Tile> neighbours = GetNeighbours(curCell, cells);
                 foreach (var neighbour in neighbours)
                 {
                     if (closedList.Contains(neighbour))
@@ -87,7 +87,7 @@ namespace Testing
 
         }
 
-        private static List<Tile> RetracePath(Tile startVector, Tile endVector)
+        private List<Tile> RetracePath(Tile startVector, Tile endVector)
         {
             List<Tile> path = new List<Tile>();
             Tile currentNode = endVector;
@@ -103,7 +103,7 @@ namespace Testing
             return path;
         }
 
-        private static int GetDistance(Vector2 neighbourPosition, Vector2 endVector)
+        private int GetDistance(Vector2 neighbourPosition, Vector2 endVector)
         {
             int dstX = Math.Abs((int)neighbourPosition.X - (int)endVector.X);
             int dstY = Math.Abs((int)neighbourPosition.Y - (int)endVector.Y);
@@ -117,7 +117,7 @@ namespace Testing
 
 
 
-        private static List<Tile> GetNeighbours(Tile curCell)
+        private List<Tile> GetNeighbours(Tile curCell, Dictionary<Vector2, Tile> cells)
         {
             List<Tile> neighbours = new List<Tile>(8);
             //var wallSprite = TileTypes.Stone;
@@ -131,7 +131,7 @@ namespace Testing
                     }
 
                     Tile curNeighbour;
-                    if (Cells.TryGetValue(new Vector2((int)curCell.Position.X + (i * 64), (int)curCell.Position.Y + (j * 64)), out var cell))
+                    if (cells.TryGetValue(new Vector2((int)curCell.Position.X + (i * 64), (int)curCell.Position.Y + (j * 64)), out var cell))
                     {
                         curNeighbour = cell;
                     }
@@ -153,14 +153,14 @@ namespace Testing
                     //hjørner
                     switch (i)
                     {
-                        case -1 when j == 1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
-                        case 1 when j == 1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
-                        case -1 when j == -1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
-                        case 1 when j == -1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
-                        case -1 when j == 1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
-                        case 1 when j == 1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
-                        case -1 when j == -1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
-                        case 1 when j == -1 && (Cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || Cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
+                        case -1 when j == 1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
+                        case 1 when j == 1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
+                        case -1 when j == -1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
+                        case 1 when j == -1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Stone) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Stone)):
+                        case -1 when j == 1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
+                        case 1 when j == 1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
+                        case -1 when j == -1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
+                        case 1 when j == -1 && (cells[curCell.Position + new Vector2(i * 64, 0)].Type.Equals(TileTypes.Fence) || cells[curCell.Position + new Vector2(0, j * 64)].Type.Equals(TileTypes.Fence)):
                             continue;
                         default:
                             neighbours.Add(curNeighbour);
